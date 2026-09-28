@@ -1,44 +1,55 @@
 {
   "expo": {
-    "name": "epds-app",
+    "name": "Maa Care",
     "slug": "epds-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/maa-care-icon.png",
     "scheme": "epdsapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/images/maa-care-icon.png"
     },
     "android": {
+      "package": "com.jeyashankarj.epdsapp",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/maa-care-mark.png",
+        "monochromeImage": "./assets/images/maa-care-mark.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "icon": "./assets/images/maa-care-icon.png"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/maa-care-icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "android": {
-            "image": "./assets/images/splash-icon.png",
-            "imageWidth": 76
-          }
+          "backgroundColor": "#FFF5F8",
+          "image": "./assets/images/maa-care-mark.png",
+          "imageWidth": 240,
+          "resizeMode": "contain"
         }
-      ]
+      ],
+      "expo-image",
+      "expo-web-browser",
+      "expo-font",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "21f0413d-ccf0-4c79-bb12-16cc633c9d80"
+      }
+    },
+    "backgroundColor": "#FFF5F8"
   }
 }

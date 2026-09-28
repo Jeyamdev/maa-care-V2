@@ -41,3 +41,18 @@ example
 # generated native folders
 /ios
 /android
+
+# IDE
+.idea/
+.vscode/
+
+# Local logs
+*.log
+
+# Generated output
+output/
+
+# Environment files
+.env
+.env.*
+!.env.example
