@@ -1,30 +1,38 @@
 # Static website hosting (not deployed)
 
-## Vercel setup
+## Vercel setup — Maa Care V2
 
-The root `vercel.json` configures the Vite build, `apps/web/dist` output,
-SPA fallback, and security/privacy headers. Keep Vercel's Root Directory
-at the repository root (`./`) so npm can resolve the shared workspace.
-The Netlify `_headers` and `_redirects` files are not used by Vercel.
+- Repository: `Jeyamdev/maa-care-V2`; production branch: `main`.
+- Framework: Vite; Root Directory: `apps/web`; Node.js: `22.x`.
+- Keep **Include files outside the root directory in the Build Step** enabled
+  so `packages/epds-core` and the root npm workspace/lockfile are available.
+- Configuration lives in `apps/web/vercel.json`, relative to the Vercel project root.
+- Install command: `cd ../.. && npm ci` (installs the locked monorepo dependencies).
+- Build command: `npm run build` (runs in `apps/web`).
+- Output directory: `dist` (repository path `apps/web/dist`).
+- No environment variables are required. Existing SPA fallback and security
+  headers are retained. Netlify `_headers`/`_redirects` are not used by Vercel.
 
-1. In Vercel, import `Jeyamdev/maa-care-epds` from GitHub.
-2. Select Vite, Root Directory `./`, and Node.js `22.x`. No environment variables
-   are required. The configuration supplies install command `npm ci`, build
-   command `npm run build:web`, and output directory `apps/web/dist`.
-3. Set **Settings → Environments → Production → Branch Tracking** to `v2`.
-   If the initial import attempts `main`, it may fail because `main` still has
-   the original mobile-only layout. Set `v2` before the next deployment.
-4. Deploy the latest `v2` commit. Confirm the deployment source is `v2` rather
-   than retrying an old `main` deployment. Future pushes to `v2` trigger updates.
-5. Verify direct links, refresh, response headers, and the privacy checks below
-   on the resulting `.vercel.app` address. Leave tracking integrations disabled.
+The old repository-root `vercel.json` explicitly set `buildCommand` to
+`npm run build:web` and `outputDirectory` to `apps/web/dist`. Those settings were
+for a repository-root build and conflicted with the selected `apps/web` root.
+Vercel's file-based buildCommand overrides the dashboard setting. The root file
+has been removed and replaced by the web-local configuration; the legitimate
+repository-root `npm run build:web` convenience script remains unchanged.
+No fake `build:web` script was added to the web package.
 
-No Vercel account connection or project was available locally when this
-configuration was prepared. Publishing and production-branch selection require
-the repository owner's Vercel/GitHub connection. No mobile release is triggered.
+Local equivalent (start at repository root):
 
-Vercel manages static asset caching; the Netlify-specific cache rules below
-do not apply automatically. Assessment data is never part of the static output.
+```sh
+cd apps/web
+(cd ../.. && npm ci)
+npm run build
+```
+
+Deploy the latest `main` commit, not a retry of an old commit containing the stale
+configuration. The build log should show `npm run build` and the web package's
+`tsc --noEmit && vite build`. Verify direct routes, refresh, and security headers
+on the deployed URL. Keep analytics and tracking integrations disabled.
 
 ## Build and output
 
@@ -56,7 +64,7 @@ For Nginx, the equivalent route handling is:
 location / { try_files $uri $uri/ /index.html; }
 ```
 
-On a host with a dashboard, set build command `npm run build:web`, build root to repository root, publish directory `apps/web/dist`, and a rewrite (not a redirect) from application routes to `/index.html`. Verify the selected host's actual behavior. Hosts without SPA rewrites need equivalent routing configuration before release.
+For repository-root hosting setups (not the Vercel apps/web setup above), set build command `npm run build:web`, build root to repository root, publish directory `apps/web/dist`, and a rewrite (not a redirect) from application routes to `/index.html`. Verify the selected host's actual behavior. Hosts without SPA rewrites need equivalent routing configuration before release.
 
 Direct `/results` and reload show the Tamil missing-assessment screen. Direct `/assessment` starts blank. About and Guide support direct links. Unknown paths show a Tamil not-found screen. Refresh never restores an assessment. Browser Back to a result after returning Home/starting again also shows the missing-assessment screen.
 
