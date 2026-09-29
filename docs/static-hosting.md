@@ -1,5 +1,31 @@
 # Static website hosting (not deployed)
 
+## Vercel setup
+
+The root `vercel.json` configures the Vite build, `apps/web/dist` output,
+SPA fallback, and security/privacy headers. Keep Vercel's Root Directory
+at the repository root (`./`) so npm can resolve the shared workspace.
+The Netlify `_headers` and `_redirects` files are not used by Vercel.
+
+1. In Vercel, import `Jeyamdev/maa-care-epds` from GitHub.
+2. Select Vite, Root Directory `./`, and Node.js `22.x`. No environment variables
+   are required. The configuration supplies install command `npm ci`, build
+   command `npm run build:web`, and output directory `apps/web/dist`.
+3. Set **Settings → Environments → Production → Branch Tracking** to `v2`.
+   If the initial import attempts `main`, it may fail because `main` still has
+   the original mobile-only layout. Set `v2` before the next deployment.
+4. Deploy the latest `v2` commit. Confirm the deployment source is `v2` rather
+   than retrying an old `main` deployment. Future pushes to `v2` trigger updates.
+5. Verify direct links, refresh, response headers, and the privacy checks below
+   on the resulting `.vercel.app` address. Leave tracking integrations disabled.
+
+No Vercel account connection or project was available locally when this
+configuration was prepared. Publishing and production-branch selection require
+the repository owner's Vercel/GitHub connection. No mobile release is triggered.
+
+Vercel manages static asset caching; the Netlify-specific cache rules below
+do not apply automatically. Assessment data is never part of the static output.
+
 ## Build and output
 
 From the repository root:

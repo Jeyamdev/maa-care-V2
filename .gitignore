@@ -58,6 +58,7 @@ output/
 !.env.example
 
 # Workspace native/generated test output
+.vercel/
 /apps/mobile/android/
 /apps/mobile/ios/
 playwright-report/
