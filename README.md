@@ -1,56 +1,82 @@
-# Welcome to your Expo app 👋
+# Maa Care
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Tamil EPDS screening and education, with an existing Expo mobile app and a separate memory-only website. This is not a medical diagnosis.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+apps/
+  mobile/                  Existing Expo Router application
+    src/                   Screens, native UI, AsyncStorage service
+    assets/images/         Production mobile images (keep here)
+    app.json               Unchanged app identity
+    eas.json               Unchanged EAS identity/profiles
+  web/                     Independent React + TypeScript + Vite website
+    public/images/         Local Maa Care brand assets
+    src/{pages,components,context,styles}/
+    tests/                 Browser/privacy/accessibility checks
+packages/
+  epds-core/
+    src/                   Pure TypeScript questions/scoring/safety/localization/types
+    tests/                 Frozen baseline and regression tests
+docs/                      Design, migration and hosting notes
+scripts/                   Storage and migration/navigation checks
+package.json               npm workspaces and root commands
+package-lock.json          One lockfile; original locked versions retained
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Install and run
 
-### Other setup steps
+Use Node 22.23.2 (or compatible Node 22.12+) and npm 10.9.8. Install from the repository root:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```sh
+npm ci
+npm run dev:web
+```
 
-## Learn more
+Website: http://127.0.0.1:5173. In another terminal, independently:
 
-To learn more about developing your project with Expo, look at the following resources:
+```sh
+npm start
+npm run android
+npm run ios
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+These three mobile commands are alternatives; `npm start` lets you select a target. Expo starts from `apps/mobile`. Run any EAS commands from that directory, only when a build is explicitly authorized. No custom Metro configuration is required. For a stale pre-migration Metro cache, run `npm start -- --clear` (or `npm run start -w @maa-care/mobile -- --clear`).
 
-## Join the community
+## Checks and builds
 
-Join our community of developers creating universal apps.
+```sh
+npm run typecheck
+npm test
+npm run build:web
+npx playwright install chromium
+npm run test:web
+npm run export:android
+(cd apps/mobile && npx expo-doctor)
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `npm test`: frozen original scoring/storage checks plus shared core tests; storage uses disposable in-memory data.
+- `npm run test:web`: runs Chromium against the production website, so run `npm run build:web` first. Screenshots: `output/web-review/`.
+- Website output: `apps/web/dist`. Preview: `npm run preview:web` (http://127.0.0.1:4173).
+- Android export output: `output/mobile-android`; export is not a Gradle/AAPT release build.
+- Optional local snapshot comparison: `node scripts/verify-migration.cjs`.
+
+For the Expo app's optional browser navigation check:
+
+```sh
+(cd apps/mobile && npx expo export --platform web --output-dir ../../output/mobile-web)
+python3 scripts/serve-mobile-review.py
+# In another terminal:
+node scripts/verify-mobile-navigation.cjs
+```
+
+This uses a fresh browser context, never device records. The public website is the Vite app, not this Expo export.
+
+## Behavior and privacy
+
+Both apps consume `@maa-care/epds-core`. Original Tamil questions/options, scoring directions, 0–9/10–12/13–30 risk thresholds and independent question-ten safety handling are unchanged. Mobile retains all routes, aliases, automatic save/retry, confirmations, offline storage and `EPDS_HISTORY` records.
+
+The website has Home → Guide → ten questions → Results, plus About. Answers/results exist only in React memory. Returning Home or starting again clears them. Reload/direct Results displays a Tamil explanation. No assessment data enters storage, URLs, history state, analytics, logs or network requests. No backend, accounts, saved history, service worker, remote fonts or embedded YouTube player. YouTube opens only after the user follows the existing fixed external link, with no referrer or assessment data.
+
+The host may retain ordinary access logs. Assets must load before offline scoring works; first-visit offline access is not promised.
+
+See [migration baseline](docs/migration-baseline.md), [implementation report](docs/website-migration.md), and [static hosting instructions](docs/static-hosting.md). Existing design notes remain in [ui-redesign.md](docs/ui-redesign.md); their original mobile-relative paths now start at `apps/mobile`.
