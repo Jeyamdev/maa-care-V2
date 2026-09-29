@@ -34,6 +34,12 @@ configuration. The build log should show `npm run build` and the web package's
 `tsc --noEmit && vite build`. Verify direct routes, refresh, and security headers
 on the deployed URL. Keep analytics and tracking integrations disabled.
 
+Git deployments also require Vercel to identify the commit author. This repository
+uses GitHub's `186163689+Jeyamdev@users.noreply.github.com` commit address for new
+deployment commits so GitHub can attribute them to `Jeyamdev`. The Vercel account
+must have its GitHub login connected. Earlier commits used a local Mac address;
+redeploy the latest commit instead of retrying one of those earlier commits.
+
 ## Build and output
 
 From the repository root:
